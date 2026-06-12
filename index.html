@@ -29,7 +29,7 @@ h1{margin:0;font-size:28px;color:var(--texto)} .sub{color:#667b91;margin-top:5px
 .donut{display:flex;align-items:center;gap:15px;height:190px} .donut svg{width:155px;height:155px} .legend{font-size:12px;line-height:1.9} .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
 .linechart{height:200px} .tbl{width:100%;border-collapse:collapse;font-size:12px} .tbl th{text-align:left;color:var(--azul);border-bottom:1px solid #dce4ee;padding:7px;white-space:nowrap} .tbl td{padding:6px 7px;border-bottom:1px solid #edf1f6} .tbl input,.tbl select{border:1px solid #d5dee9;border-radius:5px;padding:5px;width:100%;font-size:12px} .tblwrap{max-height:460px;overflow:auto}
 .right{background:#fff;border-left:1px solid var(--borda);padding:18px;position:sticky;top:0;height:100vh;overflow:auto} .right:before{content:"";position:absolute;top:0;left:0;right:0;height:5px;background:var(--vermelho)} .right h2{margin:14px 0 5px} .right p{color:#718095;margin:0 0 16px}
-.btn{border:0;border-radius:7px;padding:12px 14px;font-weight:900;cursor:pointer} .btnFull{width:100%;display:block;margin-bottom:10px} .primary{background:var(--vermelho);color:#fff} .ghost{background:#fff;border:1px solid #dce4ee;color:#1a3857} .warn{font-size:11px;color:var(--vermelho);line-height:1.4;margin-top:12px}
+.btn{border:0;border-radius:7px;padding:12px 14px;font-weight:900;cursor:pointer} .btn-excluir{border:0;border-radius:5px;padding:5px 10px;font-weight:900;font-size:11px;cursor:pointer;background:var(--vermelho);color:#fff;white-space:nowrap} .btn-excluir:hover{filter:brightness(0.9)} .btnFull{width:100%;display:block;margin-bottom:10px} .primary{background:var(--vermelho);color:#fff} .ghost{background:#fff;border:1px solid #dce4ee;color:#1a3857} .warn{font-size:11px;color:var(--vermelho);line-height:1.4;margin-top:12px}
 .view{display:none} .view.active{display:block}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:50} .modal.show{display:flex} .box{background:#fff;border-radius:16px;width:850px;max-width:94vw;padding:24px;box-shadow:0 25px 80px rgba(0,0,0,.25)} .boxhead{display:flex;justify-content:space-between;align-items:center} .x{font-size:28px;background:#fff;border:0;cursor:pointer} .formgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px 20px;margin-top:18px} .field label{display:block;font-weight:800;color:var(--azul);margin-bottom:5px} .field input,.field select,.field textarea{width:100%;border:1px solid #dce4ee;border-radius:7px;padding:10px} .field textarea{height:74px} .actions{display:flex;gap:12px;margin-top:18px} .actions button{border:0;border-radius:5px;color:#fff;font-weight:900;padding:10px 22px;cursor:pointer} .blue{background:#2297df} .save{background:#32a852} .edit{background:#ff9f00} .del{background:#f34136}
 @media(max-width:1500px){.app{grid-template-columns:200px 1fr}.right{display:none}.cards{grid-template-columns:repeat(3,1fr)}.grid{grid-template-columns:repeat(2,1fr)}.span2,.span4{grid-column:span 2}}
@@ -93,7 +93,7 @@ h1{margin:0;font-size:28px;color:var(--texto)} .sub{color:#667b91;margin-top:5px
 
  <div id="cronograma" class="view"><div class="panel span4"><h3>CRONOGRAMA COMPLETO</h3><p>Todos os pregões cadastrados</p><div class="tblwrap"><table class="tbl"><thead><tr><th>Data</th><th>Órgão</th><th>Modalidade</th><th>Número</th><th>Portal</th><th>Objeto</th><th>Categoria</th><th>Responsável</th><th>Participamos?</th><th>Ganhamos?</th><th>Itens</th><th>Valor ganho</th></tr></thead><tbody id="cronRows"></tbody></table></div></div></div>
 
- <div id="acompanhamento" class="view"><div class="panel span4"><h3>PAINEL EDITÁVEL DO MATHEUS - INFORMAÇÕES DE CADA LICITAÇÃO</h3><p>Edite os dados abaixo. Agora o campo Responsável também é editável; ao alterar, o Dashboard, metas e gráficos são recalculados automaticamente.</p><div class="tblwrap"><table class="tbl"><thead><tr><th>Data</th><th>Órgão</th><th>Número</th><th>Objeto</th><th>Categoria</th><th>Resp.</th><th>Valor Estimado</th><th>Participamos?</th><th>Ganhamos?</th><th>Itens Ganhos</th><th>Valor Ganho</th><th>Cotação Feita</th><th>Cadastrada no Sistema</th><th>Etapa</th><th>Observações</th></tr></thead><tbody id="editRows"></tbody></table></div></div></div>
+ <div id="acompanhamento" class="view"><div class="panel span4"><h3>PAINEL EDITÁVEL DO MATHEUS - INFORMAÇÕES DE CADA LICITAÇÃO</h3><p>Edite os dados abaixo. Agora o campo Responsável também é editável; ao alterar, o Dashboard, metas e gráficos são recalculados automaticamente.</p><div class="tblwrap"><table class="tbl"><thead><tr><th>Data</th><th>Órgão</th><th>Número</th><th>Objeto</th><th>Categoria</th><th>Resp.</th><th>Valor Estimado</th><th>Participamos?</th><th>Ganhamos?</th><th>Itens Ganhos</th><th>Valor Ganho</th><th>Cotação Feita</th><th>Cadastrada no Sistema</th><th>Etapa</th><th>Observações</th><th>Ações</th></tr></thead><tbody id="editRows"></tbody></table></div></div></div>
 
  <div id="historico" class="view"><div class="panel"><h3>HISTÓRICO DE PREGÕES</h3><p>Exibe licitações com resultado preenchido.</p><table class="tbl"><thead><tr><th>Data</th><th>Órgão</th><th>Número</th><th>Categoria</th><th>Responsável</th><th>Ganhamos?</th><th>Valor ganho</th></tr></thead><tbody id="histRows"></tbody></table></div></div>
  <div id="metas" class="view">
@@ -464,10 +464,36 @@ function editRow(x){
    <td style="text-align:center"><input type="checkbox" ${getPrep(x.id).cadastrada?"checked":""} onchange="updPrep(${x.id},'cadastrada',this.checked)"></td>
    <td><select onchange="upd(${x.id},'etapa',this.value)">${opts(["Recebida","Em análise","Cotação","Documentação","Proposta","Habilitação","Participação","Resultado"],x.etapa)}</select></td>
    <td><input value="${esc(x.observacoes)}" onchange="upd(${x.id},'observacoes',this.value)"></td>
+   <td style="text-align:center"><button type="button" class="btn-excluir" onclick="excluirLicitacao(${x.id})">Excluir</button></td>
  </tr>`
 }
 
 async function upd(id,k,v){ await salvarAtualizacao(id,k,v); }
+
+async function excluirLicitacao(id){
+ if(!confirm("Tem certeza que deseja excluir esta licitação?")) return;
+
+ if(modoOnline){
+   const { error } = await supabaseClient
+     .from("licitacoes")
+     .delete()
+     .eq("id", id);
+
+   if(error){
+     console.error(error);
+     alert("Erro ao excluir a licitação no banco online.");
+     return;
+   }
+ }
+
+ data = data.filter(x=>x.id!==id);
+
+ if(prep[id]){ delete prep[id]; localStorage.setItem("medbox_prep", JSON.stringify(prep)); }
+
+ if(!modoOnline){ await saveAllLocal(); }
+
+ applyFilters();
+}
 
 
 function realizadoMetaMensal(meta){
