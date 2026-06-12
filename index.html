@@ -23,6 +23,7 @@ h1{margin:0;font-size:28px;color:var(--texto)} .sub{color:#667b91;margin-top:5px
 .ico{float:left;width:39px;height:39px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;margin-right:10px;background:var(--azul);font-weight:900} .green .ico{background:var(--verde)} .orange .ico{background:var(--amarelo)} .red .ico{background:var(--vermelho)} .purple .ico{background:var(--roxo)} .teal .ico{background:var(--ciano)}
 .card small{font-weight:900;color:#516783;font-size:11px} .card strong{display:block;font-size:22px;margin:6px 0 4px} .card em{font-style:normal;font-size:11px;color:#718095}
 .success{display:grid;grid-template-columns:240px 1fr 70px;gap:16px;align-items:center;background:#fff;border:1px solid var(--borda);border-radius:8px;padding:13px;margin-bottom:13px} .progress{height:16px;background:#edf1f6;border-radius:20px;overflow:hidden} .bar{height:100%;background:var(--vermelho);border-radius:20px}
+.prepcell{display:flex;align-items:center;gap:7px} .minibar{flex:1;height:9px;min-width:60px;background:#edf1f6;border-radius:20px;overflow:hidden} .minibar>span{display:block;height:100%;background:var(--verde);border-radius:20px} .prepcell small{font-weight:900;color:#516783;min-width:30px;text-align:right}
 .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:13px} .panel{background:#fff;border:1px solid var(--borda);border-radius:8px;padding:13px;box-shadow:0 2px 7px rgba(0,0,0,.04)} .panel h3{margin:0;color:var(--azul);font-size:14px} .panel p{margin:2px 0 10px;color:#68798f;font-size:11px} .span2{grid-column:span 2} .span4{grid-column:span 4}
 .chart{height:210px;position:relative} .bars{height:180px;display:flex;align-items:end;gap:18px;padding:18px 6px 4px;border-bottom:1px solid #e8edf4} .baritem{flex:1;text-align:center;position:relative} .barcol{margin:auto;width:38px;background:linear-gradient(180deg,#005179,#002b4d);border-radius:5px 5px 0 0;min-height:3px} .barcol.red{background:linear-gradient(180deg,#f0183b,#b70022)} .barlabel{font-weight:900;font-size:11px;margin-bottom:4px} .barname{font-size:11px;margin-top:6px}
 .donut{display:flex;align-items:center;gap:15px;height:190px} .donut svg{width:155px;height:155px} .legend{font-size:12px;line-height:1.9} .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
@@ -74,6 +75,8 @@ h1{margin:0;font-size:28px;color:var(--texto)} .sub{color:#667b91;margin-top:5px
 
  <div class="success"><b>TAXA DE SUCESSO GERAL &nbsp;&nbsp; <span id="taxa">0%</span></b><div class="progress"><div id="barTaxa" class="bar"></div></div><b>Meta: 60%</b></div>
 
+ <div class="success"><b>% VALOR GANHO / VALOR EM DISPUTA &nbsp;&nbsp; <span id="taxaValor">0%</span></b><div class="progress"><div id="barTaxaValor" class="bar" style="background:var(--verde)"></div></div><b id="taxaValorDet">R$ 0 / R$ 0</b></div>
+
  <div id="dashboard" class="view active">
   <section class="grid">
    <div class="panel"><h3>LICITAÇÕES POR RESPONSÁVEL</h3><p>Quantidade de licitações</p><div id="chartResp" class="chart"></div></div>
@@ -81,8 +84,8 @@ h1{margin:0;font-size:28px;color:var(--texto)} .sub{color:#667b91;margin-top:5px
    <div class="panel"><h3>PARTICIPAÇÃO POR CATEGORIA</h3><p>% em relação ao total</p><div id="chartCat" class="chart"></div></div>
    <div class="panel"><h3>GANHAS X PERDIDAS</h3><p>Resultado das licitações</p><div id="chartWin" class="chart"></div></div>
    <div class="panel span2"><h3>EVOLUÇÃO MENSAL</h3><p>Quantidade de licitações</p><div id="chartEvol" class="linechart"></div></div>
-   <div class="panel span2"><h3>VALOR ACUMULADO (R$)</h3><p>Em disputa x ganho</p><div id="chartAcum" class="linechart"></div></div>
-   <div class="panel span2"><h3>PRÓXIMAS LICITAÇÕES</h3><p>Dados iniciais informados</p><table class="tbl"><thead><tr><th>Data</th><th>Pregão</th><th>Órgão</th><th>Categoria</th><th>Resp.</th><th>Valor</th></tr></thead><tbody id="nextRows"></tbody></table></div>
+   <div class="panel span2"><h3>VALOR POR MÊS (R$)</h3><p>Valor de cada mês — em disputa x ganho (sem repetir nos meses seguintes)</p><div id="chartAcum" class="linechart"></div></div>
+   <div class="panel span2"><h3>PRÓXIMAS LICITAÇÕES</h3><p>Somente licitações futuras • barra de preparação (Cotação Feita + Cadastrada no Sistema)</p><table class="tbl"><thead><tr><th>Data</th><th>Pregão</th><th>Órgão</th><th>Categoria</th><th>Resp.</th><th>Valor</th><th>Preparação</th></tr></thead><tbody id="nextRows"></tbody></table></div>
    <div class="panel"><h3>METAS POR CATEGORIA</h3><p>Acompanhamento das metas</p><table class="tbl"><thead><tr><th>Categoria</th><th>Meta</th><th>Realizado</th><th>%</th></tr></thead><tbody id="metaRows"></tbody></table></div>
    <div class="panel"><h3>DESEMPENHO POR RESPONSÁVEL</h3><p>Taxa de sucesso</p><table class="tbl"><thead><tr><th>Resp.</th><th>Part.</th><th>Ganhas</th><th>Taxa</th></tr></thead><tbody id="desRows"></tbody></table></div>
   </section>
@@ -90,7 +93,7 @@ h1{margin:0;font-size:28px;color:var(--texto)} .sub{color:#667b91;margin-top:5px
 
  <div id="cronograma" class="view"><div class="panel span4"><h3>CRONOGRAMA COMPLETO</h3><p>Todos os pregões cadastrados</p><div class="tblwrap"><table class="tbl"><thead><tr><th>Data</th><th>Órgão</th><th>Modalidade</th><th>Número</th><th>Portal</th><th>Objeto</th><th>Categoria</th><th>Responsável</th><th>Participamos?</th><th>Ganhamos?</th><th>Itens</th><th>Valor ganho</th></tr></thead><tbody id="cronRows"></tbody></table></div></div></div>
 
- <div id="acompanhamento" class="view"><div class="panel span4"><h3>PAINEL EDITÁVEL DO MATHEUS - INFORMAÇÕES DE CADA LICITAÇÃO</h3><p>Edite os dados abaixo. Agora o campo Responsável também é editável; ao alterar, o Dashboard, metas e gráficos são recalculados automaticamente.</p><div class="tblwrap"><table class="tbl"><thead><tr><th>Data</th><th>Órgão</th><th>Número</th><th>Objeto</th><th>Categoria</th><th>Resp.</th><th>Valor Estimado</th><th>Participamos?</th><th>Ganhamos?</th><th>Itens Ganhos</th><th>Valor Ganho</th><th>Etapa</th><th>Observações</th></tr></thead><tbody id="editRows"></tbody></table></div></div></div>
+ <div id="acompanhamento" class="view"><div class="panel span4"><h3>PAINEL EDITÁVEL DO MATHEUS - INFORMAÇÕES DE CADA LICITAÇÃO</h3><p>Edite os dados abaixo. Agora o campo Responsável também é editável; ao alterar, o Dashboard, metas e gráficos são recalculados automaticamente.</p><div class="tblwrap"><table class="tbl"><thead><tr><th>Data</th><th>Órgão</th><th>Número</th><th>Objeto</th><th>Categoria</th><th>Resp.</th><th>Valor Estimado</th><th>Participamos?</th><th>Ganhamos?</th><th>Itens Ganhos</th><th>Valor Ganho</th><th>Cotação Feita</th><th>Cadastrada no Sistema</th><th>Etapa</th><th>Observações</th></tr></thead><tbody id="editRows"></tbody></table></div></div></div>
 
  <div id="historico" class="view"><div class="panel"><h3>HISTÓRICO DE PREGÕES</h3><p>Exibe licitações com resultado preenchido.</p><table class="tbl"><thead><tr><th>Data</th><th>Órgão</th><th>Número</th><th>Categoria</th><th>Responsável</th><th>Ganhamos?</th><th>Valor ganho</th></tr></thead><tbody id="histRows"></tbody></table></div></div>
  <div id="metas" class="view">
@@ -216,6 +219,28 @@ function getMonth(d){return parseInt(String(d||"").split("/")[1]||"0")}
 function sum(arr,k){return arr.reduce((s,x)=>s+(Number(x[k])||0),0)}
 function countBy(arr,k){const o={}; arr.forEach(x=>o[x[k]]=(o[x[k]]||0)+1); return o}
 function moneyBy(arr,k,field){const o={}; arr.forEach(x=>o[x[k]]=(o[x[k]]||0)+(Number(x[field])||0)); return o}
+
+/* Preparação (Cotação Feita / Cadastrada no Sistema)
+   Guardado em localStorage por id para não exigir colunas novas no banco. */
+let prep = JSON.parse(localStorage.getItem("medbox_prep") || "{}");
+function getPrep(id){ const p=prep[id]||{}; return {cotacaoFeita:!!p.cotacaoFeita, cadastrada:!!p.cadastrada}; }
+function setPrep(id,campo,val){ if(!prep[id]) prep[id]={cotacaoFeita:false,cadastrada:false}; prep[id][campo]=!!val; localStorage.setItem("medbox_prep", JSON.stringify(prep)); }
+function prepPct(id){ const p=getPrep(id); return ((p.cotacaoFeita?1:0)+(p.cadastrada?1:0))/2*100; }
+function updPrep(id,campo,checked){ setPrep(id,campo,checked); render(); }
+
+/* Datas: parse dd/mm/aaaa e "hoje" no início do dia, para filtrar licitações futuras */
+function parseBR(d){ const iso=dataBRparaISO(d); if(!iso) return null; const dt=new Date(iso+"T00:00:00"); return isNaN(dt.getTime())?null:dt; }
+function hoje0(){ const t=new Date(); t.setHours(0,0,0,0); return t; }
+
+/* Garante que uma licitação recém-cadastrada não fique escondida pelos filtros ativos */
+function ensureVisible(x){
+ const y=getYear(x.data), m=String(getMonth(x.data));
+ if(fAno.value!=="Todos" && fAno.value!==y) fAno.value="Todos";
+ if(fMes.value!=="Todos" && fMes.value!==m){ fMes.value=[...fMes.options].some(o=>o.value===m)?m:"Todos"; }
+ if(fResp.value!=="Todos" && fResp.value!==x.responsavel) fResp.value="Todos";
+ if(fCat.value!=="Todos" && fCat.value!==x.categoria) fCat.value="Todos";
+ fBusca.value="";
+}
 
 function calcCategoria(objeto){
  const t=(objeto||"").toLowerCase();
@@ -397,10 +422,12 @@ function lineChart(el, labels, a, b, money=false){
 function render(){
  const arr=current, total=arr.length, part=arr.filter(x=>x.participamos==="Sim").length, gan=arr.filter(x=>x.ganhamos==="Sim").length, nao=arr.filter(x=>x.participamos==="Não").length, disputa=sum(arr,"valorEstimado"), ganho=sum(arr,"valorGanho"), taxa=part?gan/part*100:0;
  kTotal.textContent=total;kPart.textContent=part;kGan.textContent=gan;kNao.textContent=nao;kDisputa.textContent=brl(disputa);kGanho.textContent=brl(ganho);document.getElementById("taxa").textContent=taxa.toFixed(1).replace(".",",")+"%";barTaxa.style.width=Math.min(taxa,100)+"%";
+ const taxaValor=disputa?ganho/disputa*100:0; document.getElementById("taxaValor").textContent=taxaValor.toFixed(1).replace(".",",")+"%"; document.getElementById("barTaxaValor").style.width=Math.min(taxaValor,100)+"%"; document.getElementById("taxaValorDet").textContent=brl(ganho)+" / "+brl(disputa);
  const cr=countBy(arr,"responsavel"), mr=moneyBy(arr,"responsavel","valorEstimado"), cc=countBy(arr,"categoria");
  barChart(chartResp,names,names.map(n=>cr[n]||0),"blue"); barChart(chartValorResp,names,names.map(n=>mr[n]||0),"red",true); donut(chartCat,catNames,catNames.map(c=>cc[c]||0)); donut(chartWin,["Ganhas","Perdidas/Sem ganho"],[gan,Math.max(part-gan,0)]);
- const meses=["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"]; let qtd=Array(12).fill(0), qtdG=Array(12).fill(0), val=Array(12).fill(0), valG=Array(12).fill(0); arr.forEach(x=>{let m=getMonth(x.data)-1;if(m>=0){qtd[m]++; if(x.ganhamos==="Sim")qtdG[m]++; val[m]+=Number(x.valorEstimado)||0; valG[m]+=Number(x.valorGanho)||0;}}); lineChart(chartEvol,meses,qtd,qtdG,false); lineChart(chartAcum,meses,val.map((_,i)=>val.slice(0,i+1).reduce((a,b)=>a+b,0)),valG.map((_,i)=>valG.slice(0,i+1).reduce((a,b)=>a+b,0)),true);
- nextRows.innerHTML=arr.slice(0,8).map(x=>`<tr><td>${esc(x.data)}</td><td>${esc(x.numero)}</td><td>${esc(x.orgao)}</td><td>${esc(x.categoria)}</td><td>${esc(x.responsavel)}</td><td>${brl(x.valorEstimado)}</td></tr>`).join("");
+ const meses=["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"]; let qtd=Array(12).fill(0), qtdG=Array(12).fill(0), val=Array(12).fill(0), valG=Array(12).fill(0); arr.forEach(x=>{let m=getMonth(x.data)-1;if(m>=0){qtd[m]++; if(x.ganhamos==="Sim")qtdG[m]++; val[m]+=Number(x.valorEstimado)||0; valG[m]+=Number(x.valorGanho)||0;}}); lineChart(chartEvol,meses,qtd,qtdG,false); lineChart(chartAcum,meses,val,valG,true);
+ const hj=hoje0(); const futuras=arr.filter(x=>{const dt=parseBR(x.data); return dt&&dt>=hj;}).sort((a,b)=>parseBR(a.data)-parseBR(b.data)).slice(0,8);
+ nextRows.innerHTML=futuras.map(x=>{const pc=prepPct(x.id); return `<tr><td>${esc(x.data)}</td><td>${esc(x.numero)}</td><td>${esc(x.orgao)}</td><td>${esc(x.categoria)}</td><td>${esc(x.responsavel)}</td><td>${brl(x.valorEstimado)}</td><td><div class="prepcell"><div class="minibar"><span style="width:${pc}%"></span></div><small>${pc.toFixed(0)}%</small></div></td></tr>`;}).join("") || `<tr><td colspan="7" style="text-align:center;color:#90a0b3;padding:14px">Nenhuma licitação futura no filtro atual</td></tr>`;
  {
  const metasAtuais = metasDoMes();
  metaRows.innerHTML = metasAtuais.map(m=>{
@@ -433,6 +460,8 @@ function editRow(x){
    <td><select onchange="upd(${x.id},'ganhamos',this.value)">${opts(["Pendente","Sim","Não"],x.ganhamos)}</select></td>
    <td><input type="number" value="${x.itensGanhos}" onchange="upd(${x.id},'itensGanhos',this.value)"></td>
    <td><input type="number" value="${x.valorGanho}" onchange="upd(${x.id},'valorGanho',this.value)"></td>
+   <td style="text-align:center"><input type="checkbox" ${getPrep(x.id).cotacaoFeita?"checked":""} onchange="updPrep(${x.id},'cotacaoFeita',this.checked)"></td>
+   <td style="text-align:center"><input type="checkbox" ${getPrep(x.id).cadastrada?"checked":""} onchange="updPrep(${x.id},'cadastrada',this.checked)"></td>
    <td><select onchange="upd(${x.id},'etapa',this.value)">${opts(["Recebida","Em análise","Cotação","Documentação","Proposta","Habilitação","Participação","Resultado"],x.etapa)}</select></td>
    <td><input value="${esc(x.observacoes)}" onchange="upd(${x.id},'observacoes',this.value)"></td>
  </tr>`
@@ -505,6 +534,7 @@ document.getElementById("form").addEventListener("submit", async e=>{
  ["valorEstimado","valorGanho","itensGanhos"].forEach(k=>o[k]=Number(o[k]||0));
  o.etapa=o.etapa||"Recebida";
 
+ let novo = o;
  if(modoOnline){
    const { data: inserted, error } = await supabaseClient.from("licitacoes").insert(toDb(o)).select().single();
    if(error){
@@ -512,14 +542,17 @@ document.getElementById("form").addEventListener("submit", async e=>{
      alert("Erro ao cadastrar no banco online.");
      return;
    }
-   data.push(fromDb(inserted));
+   novo = fromDb(inserted);
+   data.push(novo);
  } else {
    data.push(o);
    await saveAllLocal();
  }
  closeModal();
  e.target.reset();
+ ensureVisible(novo);
  applyFilters();
+ alert("Licitação cadastrada com sucesso! Ela já aparece no Cronograma e no Painel de Acompanhamento.");
 });
 
 [fAno,fMes,fResp,fCat,fBusca].forEach(el=>el.addEventListener("input",applyFilters));
