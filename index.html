@@ -93,7 +93,7 @@ h1{margin:0;font-size:28px;color:var(--texto)} .sub{color:#667b91;margin-top:5px
 
  <div id="cronograma" class="view"><div class="panel span4"><h3>CRONOGRAMA COMPLETO</h3><p>Todos os pregões cadastrados</p><div class="tblwrap"><table class="tbl"><thead><tr><th>Data</th><th>Órgão</th><th>Modalidade</th><th>Número</th><th>Portal</th><th>Objeto</th><th>Categoria</th><th>Responsável</th><th>Participamos?</th><th>Ganhamos?</th><th>Itens</th><th>Valor ganho</th></tr></thead><tbody id="cronRows"></tbody></table></div></div></div>
 
- <div id="acompanhamento" class="view"><div class="panel span4"><h3>PAINEL EDITÁVEL DO MATHEUS - INFORMAÇÕES DE CADA LICITAÇÃO</h3><p>Edite os dados abaixo. Agora o campo Responsável também é editável; ao alterar, o Dashboard, metas e gráficos são recalculados automaticamente.</p><div class="tblwrap"><table class="tbl"><thead><tr><th>Data</th><th>Órgão</th><th>Número</th><th>Objeto</th><th>Categoria</th><th>Resp.</th><th>Valor Estimado</th><th>Participamos?</th><th>Ganhamos?</th><th>Itens Ganhos</th><th>Valor Ganho</th><th>Cotação Feita</th><th>Cadastrada no Sistema</th><th>Etapa</th><th>Observações</th></tr></thead><tbody id="editRows"></tbody></table></div></div></div>
+ <div id="acompanhamento" class="view"><div class="panel span4"><h3>PAINEL EDITÁVEL DO MATHEUS - INFORMAÇÕES DE CADA LICITAÇÃO</h3><p>Edite os dados abaixo. Agora o campo Responsável também é editável; ao alterar, o Dashboard, metas e gráficos são recalculados automaticamente.</p><div class="tblwrap"><table class="tbl"><thead><tr><th>Data</th><th>Órgão</th><th>Número</th><th>Objeto</th><th>Categoria</th><th>Resp.</th><th>Valor Estimado</th><th>Participamos?</th><th>Ganhamos?</th><th>Itens Ganhos</th><th>Valor Ganho</th><th>Cotação Feita</th><th>Cadastrada no Sistema</th><th>Etapa</th><th>Observações</th><th>Excluir</th></tr></thead><tbody id="editRows"></tbody></table></div></div></div>
 
  <div id="historico" class="view"><div class="panel"><h3>HISTÓRICO DE PREGÕES</h3><p>Exibe licitações com resultado preenchido.</p><table class="tbl"><thead><tr><th>Data</th><th>Órgão</th><th>Número</th><th>Categoria</th><th>Responsável</th><th>Ganhamos?</th><th>Valor ganho</th></tr></thead><tbody id="histRows"></tbody></table></div></div>
  <div id="metas" class="view">
@@ -464,10 +464,30 @@ function editRow(x){
    <td style="text-align:center"><input type="checkbox" ${getPrep(x.id).cadastrada?"checked":""} onchange="updPrep(${x.id},'cadastrada',this.checked)"></td>
    <td><select onchange="upd(${x.id},'etapa',this.value)">${opts(["Recebida","Em análise","Cotação","Documentação","Proposta","Habilitação","Participação","Resultado"],x.etapa)}</select></td>
    <td><input value="${esc(x.observacoes)}" onchange="upd(${x.id},'observacoes',this.value)"></td>
+   <td><button class="btn del" style="padding:5px 10px" onclick="excluir(${x.id})">Excluir</button></td>
  </tr>`
 }
 
 async function upd(id,k,v){ await salvarAtualizacao(id,k,v); }
+
+async function excluir(id) {
+  if (!confirm("Tem certeza que deseja excluir esta licitação?")) return;
+  const index = data.findIndex(x => x.id === id);
+  if (index === -1) return;
+  if (modoOnline) {
+    const { error } = await supabaseClient.from("licitacoes").delete().eq("id", id);
+    if (error) {
+      console.error(error);
+      alert("Erro ao excluir no banco online.");
+      return;
+    }
+  }
+  data.splice(index, 1);
+  if (!modoOnline) {
+    await saveAllLocal();
+  }
+  applyFilters();
+}
 
 
 function realizadoMetaMensal(meta){
