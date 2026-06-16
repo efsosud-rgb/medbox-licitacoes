@@ -27,7 +27,7 @@ h1{margin:0;font-size:28px;color:var(--texto)} .sub{color:#667b91;margin-top:5px
 .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:13px} .panel{background:#fff;border:1px solid var(--borda);border-radius:8px;padding:13px;box-shadow:0 2px 7px rgba(0,0,0,.04)} .panel h3{margin:0;color:var(--azul);font-size:14px} .panel p{margin:2px 0 10px;color:#68798f;font-size:11px} .span2{grid-column:span 2} .span4{grid-column:span 4}
 .chart{height:210px;position:relative} .bars{height:180px;display:flex;align-items:end;gap:18px;padding:18px 6px 4px;border-bottom:1px solid #e8edf4} .baritem{flex:1;text-align:center;position:relative} .barcol{margin:auto;width:38px;background:linear-gradient(180deg,#005179,#002b4d);border-radius:5px 5px 0 0;min-height:3px} .barcol.red{background:linear-gradient(180deg,#f0183b,#b70022)} .barlabel{font-weight:900;font-size:11px;margin-bottom:4px} .barname{font-size:11px;margin-top:6px}
 .donut{display:flex;align-items:center;gap:15px;height:190px} .donut svg{width:155px;height:155px} .legend{font-size:12px;line-height:1.9} .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
-.linechart{height:200px} .tbl{width:100%;border-collapse:collapse;font-size:12px} .tbl th{text-align:left;color:var(--azul);border-bottom:1px solid #dce4ee;padding:7px;white-space:nowrap} .tbl td{padding:6px 7px;border-bottom:1px solid #edf1f6} .tbl input,.tbl select{border:1px solid #d5dee9;border-radius:5px;padding:5px;width:100%;font-size:12px} .tblwrap{max-height:460px;overflow:auto}
+.linechart{height:200px} .tbl{width:100%;border-collapse:collapse;font-size:12px} .tbl th{text-align:left;color:var(--azul);border-bottom:1px solid #dce4ee;padding:7px;white-space:nowrap} .tbl td{padding:6px 7px;border-bottom:1px solid #edf1f6} .tbl input,.tbl select{border:1px solid #d5dee9;border-radius:5px;padding:5px;width:100%;font-size:12px} .tblwrap{max-height:460px;overflow:auto}.tblwrap.stickyHead .tbl{border-collapse:separate;border-spacing:0}.tblwrap.stickyHead thead th{position:sticky;top:0;background:#fff;z-index:3;box-shadow:0 1px 0 #dce4ee}
 .right{background:#fff;border-left:1px solid var(--borda);padding:18px;position:sticky;top:0;height:100vh;overflow:auto} .right:before{content:"";position:absolute;top:0;left:0;right:0;height:5px;background:var(--vermelho)} .right h2{margin:14px 0 5px} .right p{color:#718095;margin:0 0 16px}
 .btn{border:0;border-radius:7px;padding:12px 14px;font-weight:900;cursor:pointer} .btnFull{width:100%;display:block;margin-bottom:10px} .primary{background:var(--vermelho);color:#fff} .ghost{background:#fff;border:1px solid #dce4ee;color:#1a3857} .warn{font-size:11px;color:var(--vermelho);line-height:1.4;margin-top:12px}
 .view{display:none} .view.active{display:block}
@@ -80,7 +80,7 @@ h1{margin:0;font-size:28px;color:var(--texto)} .sub{color:#667b91;margin-top:5px
  <div id="dashboard" class="view active">
   <section class="grid">
    <div class="panel"><h3>LICITAÇÕES POR RESPONSÁVEL</h3><p>Quantidade de licitações</p><div id="chartResp" class="chart"></div></div>
-   <div class="panel"><h3>VALOR EM DISPUTA POR RESPONSÁVEL</h3><p>Valor estimado informado</p><div id="chartValorResp" class="chart"></div></div>
+   <div class="panel"><h3>VALOR GANHO POR RESPONSÁVEL</h3><p>Soma das licitações ganhas</p><div id="chartValorResp" class="chart"></div></div>
    <div class="panel"><h3>PARTICIPAÇÃO POR CATEGORIA</h3><p>% em relação ao total</p><div id="chartCat" class="chart"></div></div>
    <div class="panel"><h3>GANHAS X PERDIDAS</h3><p>Resultado das licitações</p><div id="chartWin" class="chart"></div></div>
    <div class="panel span2"><h3>EVOLUÇÃO MENSAL</h3><p>Quantidade de licitações</p><div id="chartEvol" class="linechart"></div></div>
@@ -93,7 +93,7 @@ h1{margin:0;font-size:28px;color:var(--texto)} .sub{color:#667b91;margin-top:5px
 
  <div id="cronograma" class="view"><div class="panel span4"><h3>CRONOGRAMA COMPLETO</h3><p>Todos os pregões cadastrados</p><div class="tblwrap"><table class="tbl"><thead><tr><th>Data</th><th>Órgão</th><th>Modalidade</th><th>Número</th><th>Portal</th><th>Objeto</th><th>Categoria</th><th>Responsável</th><th>Participamos?</th><th>Ganhamos?</th><th>Itens</th><th>Valor ganho</th></tr></thead><tbody id="cronRows"></tbody></table></div></div></div>
 
- <div id="acompanhamento" class="view"><div class="panel span4"><h3>PAINEL EDITÁVEL DO MATHEUS - INFORMAÇÕES DE CADA LICITAÇÃO</h3><p>Edite os dados abaixo. Agora o campo Responsável também é editável; ao alterar, o Dashboard, metas e gráficos são recalculados automaticamente.</p><div class="tblwrap"><table class="tbl"><thead><tr><th>Data</th><th>Órgão</th><th>Número</th><th>Objeto</th><th>Categoria</th><th>Resp.</th><th>Valor Estimado</th><th>Participamos?</th><th>Ganhamos?</th><th>Itens Ganhos</th><th>Valor Ganho</th><th>Cotação Feita</th><th>Cadastrada no Sistema</th><th>Etapa</th><th>Observações</th><th>Excluir</th></tr></thead><tbody id="editRows"></tbody></table></div></div></div>
+ <div id="acompanhamento" class="view"><div class="panel span4"><h3>PAINEL EDITÁVEL DO MATHEUS - INFORMAÇÕES DE CADA LICITAÇÃO</h3><p>Edite os dados abaixo. Agora o campo Responsável também é editável; ao alterar, o Dashboard, metas e gráficos são recalculados automaticamente.</p><div class="tblwrap stickyHead"><table class="tbl"><thead><tr><th>Data</th><th>Órgão</th><th>Número</th><th>Objeto</th><th>Categoria</th><th>Resp.</th><th>Valor Estimado</th><th>Participamos?</th><th>Ganhamos?</th><th>Itens Ganhos</th><th>Valor Ganho</th><th>Cotação Feita</th><th>Cadastrada no Sistema</th><th>Etapa</th><th>Observações</th><th>Excluir</th></tr></thead><tbody id="editRows"></tbody></table></div></div></div>
 
  <div id="historico" class="view"><div class="panel"><h3>HISTÓRICO DE PREGÕES</h3><p>Exibe licitações com resultado preenchido.</p><table class="tbl"><thead><tr><th>Data</th><th>Órgão</th><th>Número</th><th>Categoria</th><th>Responsável</th><th>Ganhamos?</th><th>Valor ganho</th></tr></thead><tbody id="histRows"></tbody></table></div></div>
  <div id="metas" class="view">
@@ -153,6 +153,8 @@ h1{margin:0;font-size:28px;color:var(--texto)} .sub{color:#667b91;margin-top:5px
  <div class="field"><label>Valor estimado</label><input name="valorEstimado" type="number" step="0.01" value="0"></div>
  <div class="field"><label>Participamos?</label><select name="participamos"><option>Pendente</option><option>Sim</option><option>Não</option></select></div>
  <div class="field"><label>Ganhamos?</label><select name="ganhamos"><option>Pendente</option><option>Sim</option><option>Não</option></select></div>
+ <div class="field"><label>Cotação Feita</label><select name="cotacaoFeita"><option value="false">Não</option><option value="true">Sim</option></select></div>
+ <div class="field"><label>Cadastrada no Sistema</label><select name="cadastradaSistema"><option value="false">Não</option><option value="true">Sim</option></select></div>
  <div class="field"><label>Qtde itens ganhos</label><input name="itensGanhos" type="number" value="0"></div>
  <div class="field"><label>Valor ganho</label><input name="valorGanho" type="number" step="0.01" value="0"></div>
  <div class="field"><label>Etapa</label><select name="etapa"><option>Recebida</option><option>Em análise</option><option>Cotação</option><option>Documentação</option><option>Proposta</option><option>Habilitação</option><option>Participação</option><option>Resultado</option></select></div>
@@ -207,6 +209,8 @@ let data = [];
 let current = [];
 let supabaseClient = null;
 let modoOnline = false;
+let followupColumnsAvailable = false;
+const STORAGE_KEY = "medbox_licitacoes_demo";
 
 const names = ["Regina","Layane","Pamela","Sthefany","Jéssica"];
 const catNames = ["Medicamentos","Correlatos","Odontológico","Oncológico","Judicial","Insulina"];
@@ -219,14 +223,48 @@ function getMonth(d){return parseInt(String(d||"").split("/")[1]||"0")}
 function sum(arr,k){return arr.reduce((s,x)=>s+(Number(x[k])||0),0)}
 function countBy(arr,k){const o={}; arr.forEach(x=>o[x[k]]=(o[x[k]]||0)+1); return o}
 function moneyBy(arr,k,field){const o={}; arr.forEach(x=>o[x[k]]=(o[x[k]]||0)+(Number(x[field])||0)); return o}
+function ganhas(arr){return arr.filter(x=>x.ganhamos==="Sim")}
+function valorGanhoPorResponsavel(arr,responsavel){return sum(ganhas(arr).filter(x=>x.responsavel===responsavel),"valorGanho")}
 
-/* Preparação (Cotação Feita / Cadastrada no Sistema)
-   Guardado em localStorage por id para não exigir colunas novas no banco. */
-let prep = JSON.parse(localStorage.getItem("medbox_prep") || "{}");
-function getPrep(id){ const p=prep[id]||{}; return {cotacaoFeita:!!p.cotacaoFeita, cadastrada:!!p.cadastrada}; }
-function setPrep(id,campo,val){ if(!prep[id]) prep[id]={cotacaoFeita:false,cadastrada:false}; prep[id][campo]=!!val; localStorage.setItem("medbox_prep", JSON.stringify(prep)); }
-function prepPct(id){ const p=getPrep(id); return ((p.cotacaoFeita?1:0)+(p.cadastrada?1:0))/2*100; }
-function updPrep(id,campo,checked){ setPrep(id,campo,checked); render(); }
+function boolSafe(v){ return v === true || v === "true" || v === "Sim"; }
+function normalizeLicitacao(x){
+ return {
+   ...(x || {}),
+   cotacaoFeita: boolSafe(x && x.cotacaoFeita),
+   cadastradaSistema: boolSafe(x && x.cadastradaSistema)
+ };
+}
+function normalizeLicitacoes(rows){
+ return (Array.isArray(rows) ? rows : []).map(normalizeLicitacao);
+}
+function loadLocalData(){
+ const raw = localStorage.getItem(STORAGE_KEY);
+ if(!raw) return { rows: normalizeLicitacoes(INITIAL), migrated: false, fromStorage: false };
+ try {
+   const parsed = JSON.parse(raw);
+   if(!Array.isArray(parsed)) return { rows: normalizeLicitacoes(INITIAL), migrated: false, fromStorage: false };
+   const rows = normalizeLicitacoes(parsed);
+   const migrated = JSON.stringify(parsed) !== JSON.stringify(rows);
+   return { rows, migrated, fromStorage: true };
+ } catch (err) {
+   console.error("Erro ao ler dados locais.", err);
+   return { rows: normalizeLicitacoes(INITIAL), migrated: false, fromStorage: false };
+ }
+}
+function mergeLocalFollowupFields(rows){
+ const local = loadLocalData();
+ const byId = new Map(local.rows.map(x => [String(x.id), x]));
+ return normalizeLicitacoes(rows).map(x => {
+   const saved = byId.get(String(x.id));
+   if(!saved) return x;
+   return normalizeLicitacao({
+     ...x,
+     cotacaoFeita: saved.cotacaoFeita,
+     cadastradaSistema: saved.cadastradaSistema
+   });
+ });
+}
+function prepPct(x){ return ((x.cotacaoFeita?1:0)+(x.cadastradaSistema?1:0))/2*100; }
 
 /* Datas: parse dd/mm/aaaa e "hoje" no início do dia, para filtrar licitações futuras */
 function parseBR(d){ const iso=dataBRparaISO(d); if(!iso) return null; const dt=new Date(iso+"T00:00:00"); return isNaN(dt.getTime())?null:dt; }
@@ -274,7 +312,7 @@ function dataISOparaBR(d){
  return d;
 }
 
-function toDb(x){
+function toDb(x, includeFollowup=false){
  const obj = {
    data_pregao: dataBRparaISO(x.data),
    orgao: x.orgao || "",
@@ -292,11 +330,15 @@ function toDb(x){
    etapa: x.etapa || "Recebida",
    observacoes: x.observacoes || ""
  };
+ if(includeFollowup){
+   obj.cotacao_feita = boolSafe(x.cotacaoFeita);
+   obj.cadastrada_sistema = boolSafe(x.cadastradaSistema);
+ }
  if(x.id) obj.id = x.id;
  return obj;
 }
 function fromDb(x){
- return {
+ return normalizeLicitacao({
    id: x.id,
    data: dataISOparaBR(x.data_pregao),
    orgao: x.orgao || "",
@@ -311,9 +353,11 @@ function fromDb(x){
    ganhamos: x.ganhamos || "Pendente",
    itensGanhos: Number(x.itens_ganhos || 0),
    valorGanho: Number(x.valor_ganho || 0),
+   cotacaoFeita: x.cotacao_feita,
+   cadastradaSistema: x.cadastrada_sistema,
    etapa: x.etapa || "Recebida",
    observacoes: x.observacoes || ""
- };
+ });
 }
 
 function iniciarSupabase(){
@@ -341,18 +385,22 @@ async function carregarDados(){
    if(error){
      console.error(error);
      alert("Erro ao carregar dados do Supabase. Verifique se o SQL foi executado e se as chaves foram configuradas.");
-     data = INITIAL;
+     data = normalizeLicitacoes(INITIAL);
    } else {
-     data = (rows || []).map(fromDb);
+     followupColumnsAvailable = (rows || []).some(x => Object.prototype.hasOwnProperty.call(x, "cotacao_feita") && Object.prototype.hasOwnProperty.call(x, "cadastrada_sistema"));
+     const loaded = normalizeLicitacoes((rows || []).map(fromDb));
+     data = followupColumnsAvailable ? loaded : mergeLocalFollowupFields(loaded);
    }
  } else {
-   data = JSON.parse(localStorage.getItem("medbox_licitacoes_demo") || "null") || INITIAL;
+   const local = loadLocalData();
+   data = local.rows;
+   if(local.fromStorage && local.migrated) await saveAllLocal();
  }
  applyFilters();
 }
 
 async function saveAllLocal(){
- localStorage.setItem("medbox_licitacoes_demo", JSON.stringify(data));
+ localStorage.setItem(STORAGE_KEY, JSON.stringify(normalizeLicitacoes(data)));
 }
 
 async function salvarAtualizacao(id, campo, valor){
@@ -360,9 +408,17 @@ async function salvarAtualizacao(id, campo, valor){
  if(!x) return;
 
  x[campo] = ["valorEstimado","valorGanho","itensGanhos"].includes(campo) ? Number(valor || 0) : valor;
+ if(["cotacaoFeita","cadastradaSistema"].includes(campo)) x[campo] = boolSafe(valor);
+
+ if(modoOnline && ["cotacaoFeita","cadastradaSistema"].includes(campo) && !followupColumnsAvailable){
+   await saveAllLocal();
+   alert("Para sincronizar Cotação Feita e Cadastrada no Sistema entre usuários, crie as colunas cotacao_feita e cadastrada_sistema no Supabase.");
+   applyFilters();
+   return;
+ }
 
  if(modoOnline){
-   const patch = toDb(x);
+   const patch = toDb(x, ["cotacaoFeita","cadastradaSistema"].includes(campo));
 
    const { error } = await supabaseClient
      .from("licitacoes")
@@ -391,8 +447,8 @@ async function restoreInitial(){
  if(modoOnline){
    alert("Para restaurar no banco online, execute novamente o SQL inicial no Supabase ou use a opção de limpeza pelo painel do Supabase.");
  } else {
-   localStorage.removeItem("medbox_licitacoes_demo");
-   data=INITIAL;
+   localStorage.removeItem(STORAGE_KEY);
+   data=normalizeLicitacoes(INITIAL);
    applyFilters();
  }
 }
@@ -420,18 +476,18 @@ function lineChart(el, labels, a, b, money=false){
 }
 
 function render(){
- const arr=current, total=arr.length, part=arr.filter(x=>x.participamos==="Sim").length, gan=arr.filter(x=>x.ganhamos==="Sim").length, nao=arr.filter(x=>x.participamos==="Não").length, disputa=sum(arr,"valorEstimado"), ganho=sum(arr,"valorGanho"), taxa=part?gan/part*100:0;
+ const arr=current, vencidas=ganhas(arr), total=arr.length, part=arr.filter(x=>x.participamos==="Sim").length, gan=vencidas.length, nao=arr.filter(x=>x.participamos==="Não").length, disputa=sum(arr,"valorEstimado"), ganho=sum(vencidas,"valorGanho"), taxa=part?gan/part*100:0;
  kTotal.textContent=total;kPart.textContent=part;kGan.textContent=gan;kNao.textContent=nao;kDisputa.textContent=brl(disputa);kGanho.textContent=brl(ganho);document.getElementById("taxa").textContent=taxa.toFixed(1).replace(".",",")+"%";barTaxa.style.width=Math.min(taxa,100)+"%";
  const taxaValor=disputa?ganho/disputa*100:0; document.getElementById("taxaValor").textContent=taxaValor.toFixed(1).replace(".",",")+"%"; document.getElementById("barTaxaValor").style.width=Math.min(taxaValor,100)+"%"; document.getElementById("taxaValorDet").textContent=brl(ganho)+" / "+brl(disputa);
- const cr=countBy(arr,"responsavel"), mr=moneyBy(arr,"responsavel","valorEstimado"), cc=countBy(arr,"categoria");
+ const cr=countBy(arr,"responsavel"), mr=moneyBy(vencidas,"responsavel","valorGanho"), cc=countBy(arr,"categoria");
  barChart(chartResp,names,names.map(n=>cr[n]||0),"blue"); barChart(chartValorResp,names,names.map(n=>mr[n]||0),"red",true); donut(chartCat,catNames,catNames.map(c=>cc[c]||0)); donut(chartWin,["Ganhas","Perdidas/Sem ganho"],[gan,Math.max(part-gan,0)]);
  const meses=["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"]; let qtd=Array(12).fill(0), qtdG=Array(12).fill(0), val=Array(12).fill(0), valG=Array(12).fill(0); arr.forEach(x=>{let m=getMonth(x.data)-1;if(m>=0){qtd[m]++; if(x.ganhamos==="Sim")qtdG[m]++; val[m]+=Number(x.valorEstimado)||0; valG[m]+=Number(x.valorGanho)||0;}}); lineChart(chartEvol,meses,qtd,qtdG,false); lineChart(chartAcum,meses,val,valG,true);
  const hj=hoje0(); const futuras=arr.filter(x=>{const dt=parseBR(x.data); return dt&&dt>=hj;}).sort((a,b)=>parseBR(a.data)-parseBR(b.data)).slice(0,8);
- nextRows.innerHTML=futuras.map(x=>{const pc=prepPct(x.id); return `<tr><td>${esc(x.data)}</td><td>${esc(x.numero)}</td><td>${esc(x.orgao)}</td><td>${esc(x.categoria)}</td><td>${esc(x.responsavel)}</td><td>${brl(x.valorEstimado)}</td><td><div class="prepcell"><div class="minibar"><span style="width:${pc}%"></span></div><small>${pc.toFixed(0)}%</small></div></td></tr>`;}).join("") || `<tr><td colspan="7" style="text-align:center;color:#90a0b3;padding:14px">Nenhuma licitação futura no filtro atual</td></tr>`;
+ nextRows.innerHTML=futuras.map(x=>{const pc=prepPct(x); return `<tr><td>${esc(x.data)}</td><td>${esc(x.numero)}</td><td>${esc(x.orgao)}</td><td>${esc(x.categoria)}</td><td>${esc(x.responsavel)}</td><td>${brl(x.valorEstimado)}</td><td><div class="prepcell"><div class="minibar"><span style="width:${pc}%"></span></div><small>${pc.toFixed(0)}%</small></div></td></tr>`;}).join("") || `<tr><td colspan="7" style="text-align:center;color:#90a0b3;padding:14px">Nenhuma licitação futura no filtro atual</td></tr>`;
  {
  const metasAtuais = metasDoMes();
  metaRows.innerHTML = metasAtuais.map(m=>{
-   const real = sum(arr.filter(x=>x.categoria===m.categoria && x.responsavel===m.responsavel),"valorGanho");
+   const real = valorGanhoPorResponsavel(arr,m.responsavel);
    const pct = Number(m.meta)?real/Number(m.meta)*100:0;
    return `<tr><td>${m.categoria} - ${m.responsavel}</td><td>${brl(m.meta)}</td><td>${brl(real)}</td><td><b>${pct.toFixed(1).replace(".",",")}%</b></td></tr>`
  }).join("");
@@ -460,8 +516,8 @@ function editRow(x){
    <td><select onchange="upd(${x.id},'ganhamos',this.value)">${opts(["Pendente","Sim","Não"],x.ganhamos)}</select></td>
    <td><input type="number" value="${x.itensGanhos}" onchange="upd(${x.id},'itensGanhos',this.value)"></td>
    <td><input type="number" value="${x.valorGanho}" onchange="upd(${x.id},'valorGanho',this.value)"></td>
-   <td style="text-align:center"><input type="checkbox" ${getPrep(x.id).cotacaoFeita?"checked":""} onchange="updPrep(${x.id},'cotacaoFeita',this.checked)"></td>
-   <td style="text-align:center"><input type="checkbox" ${getPrep(x.id).cadastrada?"checked":""} onchange="updPrep(${x.id},'cadastrada',this.checked)"></td>
+   <td style="text-align:center"><input type="checkbox" ${x.cotacaoFeita?"checked":""} onchange="upd(${x.id},'cotacaoFeita',this.checked)"></td>
+   <td style="text-align:center"><input type="checkbox" ${x.cadastradaSistema?"checked":""} onchange="upd(${x.id},'cadastradaSistema',this.checked)"></td>
    <td><select onchange="upd(${x.id},'etapa',this.value)">${opts(["Recebida","Em análise","Cotação","Documentação","Proposta","Habilitação","Participação","Resultado"],x.etapa)}</select></td>
    <td><input value="${esc(x.observacoes)}" onchange="upd(${x.id},'observacoes',this.value)"></td>
    <td><button class="btn del" style="padding:5px 10px" onclick="excluir(${x.id})">Excluir</button></td>
@@ -494,7 +550,7 @@ function realizadoMetaMensal(meta){
  const mes = Number(document.getElementById("metaMes") ? document.getElementById("metaMes").value : 6);
  const ano = String(document.getElementById("metaAno") ? document.getElementById("metaAno").value : "2026");
  return data
-   .filter(x => x.categoria === meta.categoria && x.responsavel === meta.responsavel && getYear(x.data) === ano && getMonth(x.data) === mes)
+   .filter(x => x.responsavel === meta.responsavel && x.ganhamos === "Sim" && getYear(x.data) === ano && getMonth(x.data) === mes)
    .reduce((s,x)=>s+Number(x.valorGanho||0),0);
 }
 
@@ -552,18 +608,25 @@ document.getElementById("form").addEventListener("submit", async e=>{
  o.categoria=o.categoria||calcCategoria(o.objeto);
  o.responsavel=o.responsavel||calcResp(o.categoria);
  ["valorEstimado","valorGanho","itensGanhos"].forEach(k=>o[k]=Number(o[k]||0));
+ o.cotacaoFeita=boolSafe(o.cotacaoFeita);
+ o.cadastradaSistema=boolSafe(o.cadastradaSistema);
  o.etapa=o.etapa||"Recebida";
 
  let novo = o;
  if(modoOnline){
-   const { data: inserted, error } = await supabaseClient.from("licitacoes").insert(toDb(o)).select().single();
+   const { data: inserted, error } = await supabaseClient.from("licitacoes").insert(toDb(o, followupColumnsAvailable)).select().single();
    if(error){
      console.error(error);
      alert("Erro ao cadastrar no banco online.");
      return;
    }
-   novo = fromDb(inserted);
+   novo = normalizeLicitacao({
+     ...fromDb(inserted),
+     cotacaoFeita: followupColumnsAvailable ? inserted.cotacao_feita : o.cotacaoFeita,
+     cadastradaSistema: followupColumnsAvailable ? inserted.cadastrada_sistema : o.cadastradaSistema
+   });
    data.push(novo);
+   if(!followupColumnsAvailable) await saveAllLocal();
  } else {
    data.push(o);
    await saveAllLocal();
