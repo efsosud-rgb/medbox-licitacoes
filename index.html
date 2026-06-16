@@ -75,7 +75,7 @@ h1{margin:0;font-size:28px;color:var(--texto)} .sub{color:#667b91;margin-top:5px
 
  <div class="success"><b>TAXA DE SUCESSO GERAL &nbsp;&nbsp; <span id="taxa">0%</span></b><div class="progress"><div id="barTaxa" class="bar"></div></div><b>Meta: 60%</b></div>
 
- <div class="success"><b>% VALOR GANHO / VALOR EM DISPUTA &nbsp;&nbsp; <span id="taxaValor">0%</span></b><div class="progress"><div id="barTaxaValor" class="bar" style="background:var(--verde)"></div></div><b id="taxaValorDet">R$ 0 / R$ 0</b></div>
+ <div class="success"><b>% REALIZADO / META &nbsp;&nbsp; <span id="taxaValor">0%</span></b><div class="progress"><div id="barTaxaValor" class="bar" style="background:var(--verde)"></div></div><b id="taxaValorDet">R$ 0 / R$ 0</b></div>
 
  <div id="dashboard" class="view active">
   <section class="grid">
@@ -225,6 +225,25 @@ function countBy(arr,k){const o={}; arr.forEach(x=>o[x[k]]=(o[x[k]]||0)+1); retu
 function moneyBy(arr,k,field){const o={}; arr.forEach(x=>o[x[k]]=(o[x[k]]||0)+(Number(x[field])||0)); return o}
 function ganhas(arr){return arr.filter(x=>x.ganhamos==="Sim")}
 function valorGanhoPorResponsavel(arr,responsavel){return sum(ganhas(arr).filter(x=>x.responsavel===responsavel),"valorGanho")}
+function chaveMetaParaFiltros(){
+ const ano = fAno && fAno.value !== "Todos" ? fAno.value : "2026";
+ const mes = fMes && fMes.value !== "Todos" ? fMes.value : "6";
+ return `${ano}-${mes}`;
+}
+function metasDosFiltros(){
+ const chave = chaveMetaParaFiltros();
+ if(!metasMensais[chave]){
+   metasMensais[chave] = metasPadrao.map(x => ({...x, meta: 0}));
+ }
+ return metasMensais[chave];
+}
+function totalMetasDosFiltros(){ return sum(metasDosFiltros(),"meta"); }
+function rankingValorGanhoPorResponsavel(arr){
+ const valores = moneyBy(ganhas(arr),"responsavel","valorGanho");
+ return names
+   .map(nome => ({ nome, valor: valores[nome] || 0 }))
+   .sort((a,b) => (b.valor - a.valor) || names.indexOf(a.nome) - names.indexOf(b.nome));
+}
 
 function boolSafe(v){ return v === true || v === "true" || v === "Sim"; }
 function normalizeLicitacao(x){
@@ -285,6 +304,22 @@ function mergeLocalFollowupFields(rows){
      cadastradaSistema: saved.cadastradaSistema
    });
  });
+}
+function needsLegacyPrepSync(row, merged){
+ return (merged.cotacaoFeita && !row.cotacaoFeita) || (merged.cadastradaSistema && !row.cadastradaSistema);
+}
+async function syncLegacyPrepToSupabase(rows){
+ if(!modoOnline || !followupColumnsAvailable) return;
+ for(const x of rows){
+   const { error } = await supabaseClient
+     .from("licitacoes")
+     .upsert(toDb(x, true), { onConflict: "id" });
+   if(error){
+     console.error(error);
+     alert("Erro ao migrar dados antigos de preparação para o Supabase.");
+     return;
+   }
+ }
 }
 function prepPct(x){ return ((x.cotacaoFeita?1:0)+(x.cadastradaSistema?1:0))/2*100; }
 
@@ -412,7 +447,12 @@ async function carregarDados(){
      followupColumnsAvailable = (rows || []).some(x => Object.prototype.hasOwnProperty.call(x, "cotacao_feita") && Object.prototype.hasOwnProperty.call(x, "cadastrada_sistema"));
      const loaded = (rows || []).map(fromDb);
      const legacyPrep = loadLegacyPrep();
-     data = followupColumnsAvailable ? loaded.map(x => mergeLegacyPrep(x, legacyPrep)) : mergeLocalFollowupFields(loaded);
+     if(followupColumnsAvailable){
+       data = loaded.map(x => mergeLegacyPrep(x, legacyPrep));
+       await syncLegacyPrepToSupabase(data.filter((x,i) => needsLegacyPrepSync(loaded[i], x)));
+     } else {
+       data = mergeLocalFollowupFields(loaded);
+     }
    }
  } else {
    const local = loadLocalData();
@@ -501,9 +541,10 @@ function lineChart(el, labels, a, b, money=false){
 function render(){
  const arr=current, vencidas=ganhas(arr), total=arr.length, part=arr.filter(x=>x.participamos==="Sim").length, gan=vencidas.length, nao=arr.filter(x=>x.participamos==="Não").length, disputa=sum(arr,"valorEstimado"), ganho=sum(vencidas,"valorGanho"), taxa=part?gan/part*100:0;
  kTotal.textContent=total;kPart.textContent=part;kGan.textContent=gan;kNao.textContent=nao;kDisputa.textContent=brl(disputa);kGanho.textContent=brl(ganho);document.getElementById("taxa").textContent=taxa.toFixed(1).replace(".",",")+"%";barTaxa.style.width=Math.min(taxa,100)+"%";
- const taxaValor=disputa?ganho/disputa*100:0; document.getElementById("taxaValor").textContent=taxaValor.toFixed(1).replace(".",",")+"%"; document.getElementById("barTaxaValor").style.width=Math.min(taxaValor,100)+"%"; document.getElementById("taxaValorDet").textContent=brl(ganho)+" / "+brl(disputa);
- const cr=countBy(arr,"responsavel"), mr=moneyBy(vencidas,"responsavel","valorGanho"), cc=countBy(arr,"categoria");
- barChart(chartResp,names,names.map(n=>cr[n]||0),"blue"); barChart(chartValorResp,names,names.map(n=>mr[n]||0),"red",true); donut(chartCat,catNames,catNames.map(c=>cc[c]||0)); donut(chartWin,["Ganhas","Perdidas/Sem ganho"],[gan,Math.max(part-gan,0)]);
+ const totalMetas=totalMetasDosFiltros(), taxaValor=totalMetas?ganho/totalMetas*100:0; document.getElementById("taxaValor").textContent=taxaValor.toFixed(1).replace(".",",")+"%"; document.getElementById("barTaxaValor").style.width=Math.min(taxaValor,100)+"%"; document.getElementById("taxaValorDet").textContent=brl(ganho)+" / "+brl(totalMetas);
+ const cr=countBy(arr,"responsavel"), cc=countBy(arr,"categoria");
+ const rankingGanho=rankingValorGanhoPorResponsavel(arr);
+ barChart(chartResp,names,names.map(n=>cr[n]||0),"blue"); barChart(chartValorResp,rankingGanho.map(x=>x.nome),rankingGanho.map(x=>x.valor),"red",true); donut(chartCat,catNames,catNames.map(c=>cc[c]||0)); donut(chartWin,["Ganhas","Perdidas/Sem ganho"],[gan,Math.max(part-gan,0)]);
  const meses=["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"]; let qtd=Array(12).fill(0), qtdG=Array(12).fill(0), val=Array(12).fill(0), valG=Array(12).fill(0); arr.forEach(x=>{let m=getMonth(x.data)-1;if(m>=0){qtd[m]++; if(x.ganhamos==="Sim")qtdG[m]++; val[m]+=Number(x.valorEstimado)||0; valG[m]+=Number(x.valorGanho)||0;}}); lineChart(chartEvol,meses,qtd,qtdG,false); lineChart(chartAcum,meses,val,valG,true);
  const hj=hoje0(); const futuras=arr.filter(x=>{const dt=parseBR(x.data); return dt&&dt>=hj;}).sort((a,b)=>parseBR(a.data)-parseBR(b.data)).slice(0,8);
  nextRows.innerHTML=futuras.map(x=>{const pc=prepPct(x); return `<tr><td>${esc(x.data)}</td><td>${esc(x.numero)}</td><td>${esc(x.orgao)}</td><td>${esc(x.categoria)}</td><td>${esc(x.responsavel)}</td><td>${brl(x.valorEstimado)}</td><td><div class="prepcell"><div class="minibar"><span style="width:${pc}%"></span></div><small>${pc.toFixed(0)}%</small></div></td></tr>`;}).join("") || `<tr><td colspan="7" style="text-align:center;color:#90a0b3;padding:14px">Nenhuma licitação futura no filtro atual</td></tr>`;
