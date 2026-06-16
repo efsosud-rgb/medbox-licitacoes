@@ -237,18 +237,40 @@ function normalizeLicitacao(x){
 function normalizeLicitacoes(rows){
  return (Array.isArray(rows) ? rows : []).map(normalizeLicitacao);
 }
+function loadLegacyPrep(){
+ const raw = localStorage.getItem("medbox_prep");
+ if(!raw) return {};
+ try {
+   return JSON.parse(raw) || {};
+ } catch (err) {
+   console.error("Erro ao ler preparação local antiga.", err);
+   return {};
+ }
+}
+function mergeLegacyPrep(x, prep){
+ const normalized = normalizeLicitacao(x);
+ const old = prep[String(normalized.id)] || prep[normalized.id];
+ if(!old) return normalized;
+ return {
+   ...normalized,
+   cotacaoFeita: normalized.cotacaoFeita || boolSafe(old.cotacaoFeita),
+   cadastradaSistema: normalized.cadastradaSistema || boolSafe(old.cadastradaSistema || old.cadastrada)
+ };
+}
 function loadLocalData(){
  const raw = localStorage.getItem(STORAGE_KEY);
- if(!raw) return { rows: normalizeLicitacoes(INITIAL), migrated: false, fromStorage: false };
+ const prep = loadLegacyPrep();
+ const hasPrep = Object.keys(prep).length > 0;
+ if(!raw) return { rows: normalizeLicitacoes(INITIAL).map(x => mergeLegacyPrep(x, prep)), migrated: hasPrep, fromStorage: false };
  try {
    const parsed = JSON.parse(raw);
-   if(!Array.isArray(parsed)) return { rows: normalizeLicitacoes(INITIAL), migrated: false, fromStorage: false };
-   const rows = normalizeLicitacoes(parsed);
+   if(!Array.isArray(parsed)) return { rows: normalizeLicitacoes(INITIAL).map(x => mergeLegacyPrep(x, prep)), migrated: hasPrep, fromStorage: false };
+   const rows = normalizeLicitacoes(parsed).map(x => mergeLegacyPrep(x, prep));
    const migrated = JSON.stringify(parsed) !== JSON.stringify(rows);
    return { rows, migrated, fromStorage: true };
  } catch (err) {
    console.error("Erro ao ler dados locais.", err);
-   return { rows: normalizeLicitacoes(INITIAL), migrated: false, fromStorage: false };
+   return { rows: normalizeLicitacoes(INITIAL).map(x => mergeLegacyPrep(x, prep)), migrated: hasPrep, fromStorage: false };
  }
 }
 function mergeLocalFollowupFields(rows){
@@ -388,8 +410,9 @@ async function carregarDados(){
      data = normalizeLicitacoes(INITIAL);
    } else {
      followupColumnsAvailable = (rows || []).some(x => Object.prototype.hasOwnProperty.call(x, "cotacao_feita") && Object.prototype.hasOwnProperty.call(x, "cadastrada_sistema"));
-     const loaded = normalizeLicitacoes((rows || []).map(fromDb));
-     data = followupColumnsAvailable ? loaded : mergeLocalFollowupFields(loaded);
+     const loaded = (rows || []).map(fromDb);
+     const legacyPrep = loadLegacyPrep();
+     data = followupColumnsAvailable ? loaded.map(x => mergeLegacyPrep(x, legacyPrep)) : mergeLocalFollowupFields(loaded);
    }
  } else {
    const local = loadLocalData();
@@ -487,7 +510,7 @@ function render(){
  {
  const metasAtuais = metasDoMes();
  metaRows.innerHTML = metasAtuais.map(m=>{
-   const real = valorGanhoPorResponsavel(arr,m.responsavel);
+   const real = sum(arr.filter(x=>x.categoria===m.categoria && x.responsavel===m.responsavel && x.ganhamos==="Sim"),"valorGanho");
    const pct = Number(m.meta)?real/Number(m.meta)*100:0;
    return `<tr><td>${m.categoria} - ${m.responsavel}</td><td>${brl(m.meta)}</td><td>${brl(real)}</td><td><b>${pct.toFixed(1).replace(".",",")}%</b></td></tr>`
  }).join("");
@@ -550,7 +573,7 @@ function realizadoMetaMensal(meta){
  const mes = Number(document.getElementById("metaMes") ? document.getElementById("metaMes").value : 6);
  const ano = String(document.getElementById("metaAno") ? document.getElementById("metaAno").value : "2026");
  return data
-   .filter(x => x.responsavel === meta.responsavel && x.ganhamos === "Sim" && getYear(x.data) === ano && getMonth(x.data) === mes)
+   .filter(x => x.categoria === meta.categoria && x.responsavel === meta.responsavel && x.ganhamos === "Sim" && getYear(x.data) === ano && getMonth(x.data) === mes)
    .reduce((s,x)=>s+Number(x.valorGanho||0),0);
 }
 
